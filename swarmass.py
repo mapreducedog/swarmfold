@@ -154,8 +154,8 @@ def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphph
 	means = []
 	for generation in range(generations):
 		old_path = world.get_max_phero_path()
-		initial_ants = [move.Ant(random.randint(0, len(w) - 1), random.choice(w.directions)).as_new(w) for _ in range(pop_size)]
-		print("generation {}".format(i + 1))
+		initial_ants = [move.Ant(random.randint(0, len(world) - 1), random.choice(world.directions)).as_new(world) for _ in range(pop_size)]
+		print("generation {}".format(generation + 1))
 		succesful_ants = world.move_ants(initial_ants)
 		if succesful_ants: #1 or more ants completed the path
 			pop_best = min(succesful_ants, key = lambda ant:ant.score)
@@ -166,13 +166,13 @@ def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphph
 			print("succesfull paths : {}".format(len(succesful_ants)))
 			print("min : {}".format(pop_best.score))
 			print("mean : {}".format(mean))
-			b = list(sorted(b, key = lambda x:x.score))[0:len(b)//2]
-			print(b)
+			selected_ants= list(sorted(succesful_ants, key = lambda x:x.score))[0:len(succesful_ants)//2]
+			print(selected_ants)
 			#b = list(filter(lambda x: x.score < (pop_best.score +  mean)/2, b))
-			plot_ant(pop_best, i)
-		w.lay_pheromone(b)
-		check_score.plot_world_phero(w, i + 1)
-		new_path = w.get_max_phero_path()
+			plot_ant(pop_best, generation)
+		world.lay_pheromone(best_ant)
+		check_score.plot_world_phero(world, generation + 1)
+		new_path = world.get_max_phero_path()
 		print("Fraction Changes: {}".format(sum(map(lambda x,y: x != y, new_path, old_path))/ len(new_path)))
 	#plot_pher_route(w)
 	check_score.plot_history(means)
@@ -180,7 +180,7 @@ def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphph
 	print(a.score)
 	[print(coord.T, dire) for coord, dire in zip(a.coord_sequence, a.move_sequence)]
 	plot_ant(a, "final")
-	return w,b + [a]
+	return world,best_ant + [a]
 
 
 
