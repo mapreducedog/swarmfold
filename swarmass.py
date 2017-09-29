@@ -10,6 +10,7 @@ import itertools
 import random
 import typing
 import sys
+import math
 
 #non-builtin
 import numpy as np
@@ -19,15 +20,15 @@ import check_score
 import move
 
 class World(list):
-	pheromone_bias = 1 #alpha in paper
-	energy_bias = 2#0.2 #beta in paper
-	temp_energy = 27	 #gamma in paper
+	pheromone_bias = 1 #1 #alpha in paper
+	energy_bias = 2 #2#0.2 #beta in paper
+	temp_energy = 1 #27	 #gamma in paper
 	min_pheromone_level = 0.05 #theta in paper
-	pheromone_decay_rate = 0.95 #rho in paper
+	pheromone_decay_rate = 0.98	#0.95 #rho in paper
 	directions = list(move.vector.keys()) # ['l','r','f']
+	with_votes = True
 	__base_pheromone__ = 1/len(directions)
 	def __init__(self, sequence, target_score):
-		
 		super().__init__(({direction:self.__base_pheromone__ for direction in self.directions} 
 					for _ in sequence))
 		self.votes = [{direction:0 for direction in self.directions} for _ in sequence]
@@ -76,8 +77,33 @@ class World(list):
 			if sum_prob > roll:
 				return ant
 		
-	
-	def lay_pheromone(self, ants: typing.Sequence[move.Ant]) -> None:
+	def lay_pheromone_with_votes(self, ants: typing.Sequence[move.Ant]) -> None:
+        		#todo decay pheromone
+		for pheromones in self.votes:
+			for direction in pheromones:
+				pheromones[direction] *= self.pheromone_decay_rate
+		
+		totscore = self.target_score #sum((ant.score for ant in ants)) or 1
+		for ant in ants:
+			ant.rel_score = abs(ant.score/self.target_score)
+			for direction, votes in zip(ant.move_sequence, self.votes):
+				votes[direction] += ant.rel_score #mutability carries through
+		
+		
+		#normalizing the pheromone levels
+		for votes, pheromones in zip(self.votes, self):
+			totvalue = sum(votes.values())
+			if totvalue == 0:
+				continue
+			for direction in pheromones:
+				pheromones[direction] = votes[direction] / totvalue
+			while min(pheromones.values()) < self.min_pheromone_level:
+				lowest = min(pheromones, key = lambda x:pheromones[x])
+				highest = max(pheromones, key = lambda x:pheromones[x])
+				diff = self.min_pheromone_level - pheromones[lowest]
+				pheromones[lowest] = self.min_pheromone_level
+				pheromones[highest] -= diff
+	def lay_pheromone_without_votes(self, ants: typing.Sequence[move.Ant]) -> None:
 		#decay pheromone
 		for pheromones in self:
 			for direction in pheromones:
@@ -101,14 +127,14 @@ class World(list):
 				highest = max(pheromones, key = lambda x:pheromones[x])
 				diff = self.min_pheromone_level - pheromones[lowest]
 				pheromones[lowest] = self.min_pheromone_level
-				pheromones[highest] -= diff
-			
-											 
+                pheromones[highest] -= diff
+        
 	def get_max_phero_path(self):
 		return "".join([max(pher, key = pher.get) for pher in self])
 	
 	
 	def move_ants(self, ants : typing.Sequence[move.Ant]) -> typing.List[move.Ant]:
+		make_new_ant = lambda : move.Ant(random.randint(0, len(self) - 1), random.choice(self.directions)).as_new(self)
 		
 		select_fwd = lambda ant: ant if ant.reached_end() else \
 					self.choose_path(self.get_path_prob_fwd(ant)) #if no possible successor, return this ant 
@@ -122,9 +148,11 @@ class World(list):
 			for ant in walking_ants:
 				new_ant = select_bck(ant)
 				if new_ant is None:
+					queued_ants.append(make_new_ant())
 					continue
 				new_ant = select_fwd(new_ant)
 				if new_ant is None:
+					queued_ants.append(make_new_ant())
 					continue
 				if new_ant.completed_path():
 					finished_ants.append(new_ant)
@@ -149,43 +177,80 @@ def plot_pher_route(world, gen = 0):
 def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphphhhphphhpphhppphpppppppphh', 
 				target_score = 32):
 	world = World(polarity_string, target_score)
+	check_score.plot_world_phero(world)
 	#w = World('hpphpphpphpphpph')
-	best_ant = type('Ant', (object, ), {'score': 0})
+	best = type('Ant', (object, ), {'score': 0})
 	means = []
-	for generation in range(generations):
+	mins = []
+	for i in range(generations):
 		old_path = world.get_max_phero_path()
-		initial_ants = [move.Ant(random.randint(0, len(world) - 1), random.choice(world.directions)).as_new(world) for _ in range(pop_size)]
-		print("generation {}".format(generation + 1))
-		succesful_ants = world.move_ants(initial_ants)
-		if succesful_ants: #1 or more ants completed the path
-			pop_best = min(succesful_ants, key = lambda ant:ant.score)
-			if pop_best.score < best_ant.score:
-				best_ant = pop_best
-			mean = sum((x.score for x in succesful_ants))/len(succesful_ants)
+		a = [move.Ant(random.randint(0, len(world) - 1), random.choice(world.directions)).as_new(world) for _ in range(pop_size)]
+		print("generation {}".format(i + 1))
+		successful_ants = world.move_ants(a)
+		if successful_ants:
+			pop_best = min(successful_ants, key = lambda ant:ant.score)
+			if pop_best.score < best.score:
+				best = pop_best
+			mean = sum((x.score for x in successful_ants))/len(successful_ants)
+			mins.append(pop_best.score)
 			means.append(mean)
-			print("succesfull paths : {}".format(len(succesful_ants)))
+			print("succesfull paths : {}".format(len(successful_ants)))
 			print("min : {}".format(pop_best.score))
 			print("mean : {}".format(mean))
-			selected_ants= list(sorted(succesful_ants, key = lambda x:x.score))[0:len(succesful_ants)//2]
-			print(selected_ants)
+			laying_ants = list(sorted(successful_ants, key = lambda x:x.score))[0:len(successful_ants)//5]
+			print("{} ants will place their pheromones".format(len(laying_ants)))
 			#b = list(filter(lambda x: x.score < (pop_best.score +  mean)/2, b))
-			plot_ant(pop_best, generation)
-		world.lay_pheromone(best_ant)
-		check_score.plot_world_phero(world, generation + 1)
+			plot_ant(pop_best, i)
+		world.lay_pheromone(laying_ants)
+		check_score.plot_world_phero(world, i + 1)
 		new_path = world.get_max_phero_path()
 		print("Fraction Changes: {}".format(sum(map(lambda x,y: x != y, new_path, old_path))/ len(new_path)))
 	#plot_pher_route(w)
-	check_score.plot_history(means)
+	check_score.plot_history(mins)
 	a = best
 	print(a.score)
 	[print(coord.T, dire) for coord, dire in zip(a.coord_sequence, a.move_sequence)]
 	plot_ant(a, "final")
-	return world,best_ant + [a]
+	return world,successful_ants + [a]
 
 
+def check_option(short_option, long_option, return_arguments = False):
+    if not short_option:
+        short_option = '_______________________________________'
+    if not long_option:
+        long_option = '_______________________________________'
+    for option in ["-" + short_option,
+                   "--" + long_option]:
+        if option in sys.argv:
+            pos = sys.argv.index(option)
+            if return_arguments:
+                return list(itertools.takewhile(lambda x: not x.startswith("-"), sys.argv[pos + 1:]))
+            else:
+                return True
+    for pos, string in enumerate(sys.argv[1:], 1):
+        if string.startswith("-") and not string.startswith('--'):
+            if short_option in string:
+                if return_arguments:
+                    return list(itertools.takewhile(lambda x: not x.startswith("-"), sys.argv[pos + 1:]))
+                return True
+    return [] if return_arguments else False
+
+def twod_path():
+    World.directions = ['l','r','f']
+    World.__base_pheromone__ = 1/ len(World.directions)
+def set_pop_size(x):
+    current_options[0] = int(x[0])
+def set_generation_size(x):
+    current_options[1] = int(x[0])
+def set_polarity_string(x):
+    current_options[2] = int(x[0])
+def set_target_score(x):
+    current_options[3] = int(x[0])
+def print_help():
+    exit()
+    
 
 if __name__ == '__main__':
-	#World.directions = ['l','r','f']
-	#World.__base_pheromone__ = 1/ len(World.directions)
-	
-	my_world,my_ant = test_single(100, 100)
+    default_options = [10, 30, 'hhhhhhhhhhhhphphpphhpphhpphpphhpphhpphpphhpphhpphphphhhhhhhhhhhh', 42]
+    current_options = default_options[:]
+    my_world,my_ant = test_single(*current_options)
