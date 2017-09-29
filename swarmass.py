@@ -18,11 +18,12 @@ import numpy as np
 #own
 import check_score
 import move
+import user_interface
 
 class World(list):
-    pheromone_bias = 1 #1 #alpha in paper
-    energy_bias = 2 #2#0.2 #beta in paper
-    temp_energy = 1 #27     #gamma in paper
+    pheromone_bias = 1.0 #1 #alpha in paper
+    energy_bias = 2.0 #2#0.2 #beta in paper
+    temp_energy = 1.0 #27     #gamma in paper
     min_pheromone_level = 0.05 #theta in paper
     pheromone_decay_rate = 0.98    #0.95 #rho in paper
     directions = list(move.vector.keys()) # ['l','r','f']
@@ -218,32 +219,6 @@ def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphph
     plot_ant(a, "final")
     return world,successful_ants + [a]
 
-
-def check_option(short_option, long_option, return_arguments = False):
-    if not short_option:
-        short_option = '_______________________________________'
-    if not long_option:
-        long_option = '_______________________________________'
-    for option in ["-" + short_option,
-                   "--" + long_option]:
-        if option in sys.argv:
-            pos = sys.argv.index(option)
-            if return_arguments:
-                return list(itertools.takewhile(lambda x: not x.startswith("-"), sys.argv[pos + 1:]))
-            else:
-                return True
-    for pos, string in enumerate(sys.argv[1:], 1):
-        if string.startswith("-") and not string.startswith('--'):
-            if short_option in string:
-                if return_arguments:
-                    return list(itertools.takewhile(lambda x: not x.startswith("-"), sys.argv[pos + 1:]))
-                return True
-    return [] if return_arguments else False
-
-
-    
-
 if __name__ == '__main__':
-    default_options = [10, 30, 'hhhhhhhhhhhhphphpphhpphhpphpphhpphhpphpphhpphhpphphphhhhhhhhhhhh', 42]
-    current_options = default_options[:]
-    my_world,my_ant = test_single(*current_options)
+    user_interface.main()
+    my_world,my_ant = test_single(*user_interface.current_options)
