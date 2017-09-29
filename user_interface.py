@@ -24,10 +24,13 @@ def set_number_generations(x):
 def set_polarity_string(x):
     '''the sequence to solve, default:{}'''
     current_options[set_polarity_string.pos] = int(x[0])
+def set_parameters(x):
+    "set pheremone_bias, energy_bias, temp_energy"
 def set_target_score(x):
     '''the target score, default:{}'''
     current_options[set_target_score.pos] = int(x[0])
 def print_help():
+    '''print help'''
     print(__doc__)
     exit()
     
@@ -61,9 +64,7 @@ def main():
             if item[2]: #returns the arguments
                 item[0](item[2]) #apply the function to the arguments
             else:
-                item[0]()
-    print("bla")
-    
+                item[0]()    
 
 flags = [(print_help, ('h', 'help'), False),
         (twod_path, ('2', 'twod'), False),
