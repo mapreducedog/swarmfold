@@ -29,13 +29,24 @@ class World(list):
     directions = list(move.vector.keys()) # ['l','r','f']
     with_votes = True
     __base_pheromone__ = 1/len(directions)
+    
+    
     def __init__(self, sequence, target_score):
         super().__init__(({direction:self.__base_pheromone__ for direction in self.directions} 
                     for _ in sequence))
         self.votes = [{direction:0 for direction in self.directions} for _ in sequence]
         self.sequence = sequence
         self.target_score = -abs(target_score)
-        
+    
+    @classmethod
+    def set_dimensionality(cls, dimensionality = 2):
+        if dimensionality == 2:
+            cls.directions = ['l','r','f']
+        elif dimensionality == 3:
+            cls.directions = list(move.vector.keys())
+        else :
+            raise NotImplementedError("dimensionality should be 2 or 3")
+        cls.__base_pheromone__ = 1/ len(cls.directions) 
     def get_sequence(self, start, end):
         return self.sequence[start:end]
     
@@ -173,7 +184,9 @@ class World(list):
         #return [select_fwd(select_bck(ant)) for ant in ants]
         
 def plot_ant(ant, gen = 0):
+    check_score.save_sequence(ant.move_sequence, ant.world.sequence, "Ant Gen {} {}".format(gen, ant.score))
     check_score.make_plot(ant.coord_sequence, ant.world.sequence, name = "Ant Gen {} {}".format(gen, ant.score))
+    
 
 def plot_pher_route(world, gen = 0):
     min_route = "".join([max(pher, key = pher.get) for pher in world])
@@ -221,4 +234,6 @@ def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphph
 
 if __name__ == '__main__':
     user_interface.main()
-    my_world,my_ant = test_single(*user_interface.current_options)
+    World.set_dimensionality(user_interface.current_options[-1])
+    print(World.directions)
+    my_world,my_ant = test_single(*user_interface.current_options[:-1])

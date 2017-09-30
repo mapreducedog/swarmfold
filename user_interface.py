@@ -5,16 +5,15 @@ python3 swarmass.py [options]
 
 import sys
 import swarmass
+import itertools
 
-
-default_options = [10, 30, 'hhhhhhhhhhhhphphpphhpphhpphpphhpphhpphpphhpphhpphphphhhhhhhhhhhh', 42]
+default_options = [10, 30, 'hhhhhhhhhhhhphphpphhpphhpphpphhpphhpphpphhpphhpphphphhhhhhhhhhhh', 42, 3]
 current_options = default_options[:]
 
 
 def twod_path():
     '''fold in 2-dimensional space, rather than 3-dimensional''' 
-    swarmass.World.directions = ['l','r','f']
-    swarmass.World.__base_pheromone__ = 1/ len(World.directions)
+    current_options[-1] = 2
 def set_pop_size(x):
     '''the population size per generation, default:{}'''
     current_options[set_pop_size.pos] = int(x[0])
@@ -62,7 +61,7 @@ def main():
         return_value = check_option(item[1][0], item[1][1], item[2])
         if return_value:
             if item[2]: #returns the arguments
-                item[0](item[2]) #apply the function to the arguments
+                item[0](return_value) #apply the function to the arguments
             else:
                 item[0]()    
 
