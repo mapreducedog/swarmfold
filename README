@@ -4,4 +4,7 @@ assuming you installed anaconda to ~/anaconda3:
 install pyQT4:
 ~/anaconda3/bin/conda install pyqt=4
 to run the swarmass:
-~/anaconda3/bin/python3.5 swarmass.py
+~/anaconda3/bin/python3.5 swarmass.py 
+
+to see the options run:
+~/anaconda3/bin/python3.5 swarmass.py --help
