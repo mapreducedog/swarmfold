@@ -9,8 +9,8 @@ def view_sequence(filename):
     with open(filename, 'r') as infile:
         seqdic = json.load(infile)
     check_score.test_plot(seqdic['move_sequence'],seqdic['polar_sequence'])
-check_score.show_plots = True
-check_score.save_plots = False
+    
+    
 
 
 if __name__ == '__main__':

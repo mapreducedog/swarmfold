@@ -15,9 +15,6 @@ import move
 import itertools
 import json
 
-save_plots = True
-show_plots = False
-
 def get_coords_blocks(move_sequence):
     coord = np.matrix('0;0;0')
     move_block = move.block['f']
@@ -128,7 +125,7 @@ def plot_world_phero(world, gen = 0):
     
     
 def test_plot(move_sequence, polar_sequence, name = None):
-    coords, blocks = zip(*get_coords_blocks(move_sequence))
+    #coords, blocks = zip(*get_coords_blocks(move_sequence))
     #for l, r in zip(coords, blocks):
     #    print(l)
     #    print(r)
