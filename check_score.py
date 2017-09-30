@@ -76,7 +76,7 @@ def pickle_plot(plt_obj, filename):
 
 def save_sequence(move_sequence, polar_sequence, filename):
     outdic = {'move_sequence' : move_sequence, 'polar_sequence': polar_sequence}
-    with open(os.path.join("paths", "{}.json".format(filename)), 'w') as outfile:
+    with open(os.path.join("paths", "{}.json".format(filename)).replace(" ", "_"), 'w') as outfile:
         json.dump(outdic, outfile)
 
 def make_plot(coord_sequence, polar_sequence = None, name = None, show_plot = False, save_plot = True):
@@ -100,7 +100,7 @@ def make_plot(coord_sequence, polar_sequence = None, name = None, show_plot = Fa
         ax.text(xyz[0,0],xyz[1,0],xyz[2,0], s = str(pos))
         #ax.text(*xyz, s = str(pos))
     if save_plot:
-        plt.savefig(os.path.join("paths", "{}".format(name or int(time.time()))))
+        plt.savefig(os.path.join("paths", "{}".format(name or int(time.time()))).replace(" ", "_"))
     if show_plot:
         plt.show()
     fig.clf()
@@ -138,4 +138,4 @@ def test_plot(move_sequence, polar_sequence, name = None):
 def plot_history(mean_hist):
     x = list(range(len(mean_hist)))
     plt.plot(x, mean_hist)
-    plt.savefig("paths/{}".format(int(time.time())))
+    plt.savefig(os.path.join("paths", {}.format(int(time.time()))).replace(" ", "_"))
