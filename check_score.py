@@ -79,7 +79,7 @@ def save_sequence(move_sequence, polar_sequence, filename):
     with open(os.path.join("paths", "{}.json".format(filename)), 'w') as outfile:
         json.dump(outdic, outfile)
 
-def make_plot(coord_sequence, polar_sequence = None, name = None, show_plot = True, save_plot = True):
+def make_plot(coord_sequence, polar_sequence = None, name = None, show_plot = False, save_plot = True):
     fig = plt.figure()
     ax = fig.gca(projection = '3d')
     plt.hold(True)
