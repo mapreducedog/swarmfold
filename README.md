@@ -3,7 +3,7 @@
 
 # Usage:
 
-`<path/to/anaconda/python> swarmass.py [options]`
+`<path/to/anaconda/python> swarmass.py [options]`  
 to interactively view results:  
 `<path/to/anaconda/python> view_sequence.py <path/to/ant/json>...`
 
