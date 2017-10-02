@@ -14,6 +14,8 @@ current_options = default_options[:]
 def twod_path():
     '''fold in 2-dimensional space, rather than 3-dimensional''' 
     current_options[-1] = 2
+    
+
 def set_pop_size(x):
     '''the population size per generation, default:{}'''
     current_options[set_pop_size.pos] = int(x[0])
@@ -28,6 +30,9 @@ def set_parameters(x):
 def set_target_score(x):
     '''the target score, default:{}'''
     current_options[set_target_score.pos] = int(x[0])
+def set_dimensionality(x):
+    '''set the dimensionality, choose 2 or 3, default {}'''
+    current_options[-1] = int(x[0])
 def print_help():
     '''print help'''
     print(__doc__)
@@ -66,13 +71,13 @@ def main():
                 item[0]()    
 
 flags = [(print_help, ('h', 'help'), False),
-        (twod_path, ('2', 'twod'), False),
          (set_pop_size,('p', 'population'), True),
          (set_number_generations, ('g', 'generations'), True),
          (set_polarity_string, ('s', 'sequence'), True),
-         (set_target_score, ('t', 'target'), True)
+         (set_target_score, ('t', 'target'), True),
+         (set_dimensionality, ('d', 'dimensionality'), True)
         ]
-for pos, item in enumerate(flags[2:],0):
+for pos, item in enumerate(flags[1:],0):
     item[0].pos = pos
     item[0].__doc__ = item[0].__doc__.format(default_options[pos])
              
