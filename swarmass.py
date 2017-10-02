@@ -231,12 +231,11 @@ def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphph
     check_score.plot_history(mins)
     a = best
     print(a.score)
-    [print(coord.T, dire) for coord, dire in zip(a.coord_sequence, a.move_sequence)]
+    #[print(coord.T, dire) for coord, dire in zip(a.coord_sequence, a.move_sequence)]
     plot_ant(a, "final")
     return world,successful_ants + [a]
 
 if __name__ == '__main__':
     user_interface.main()
     World.set_dimensionality(user_interface.current_options[-1])
-    print(World.directions)
     my_world,my_ant = test_single(*user_interface.current_options[:-1])
