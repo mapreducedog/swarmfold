@@ -4,10 +4,11 @@
 # Usage:
 
 `<path/to/anaconda/python> swarmass.py [options]`  
+  
 to interactively view results:  
 `<path/to/anaconda/python> view_sequence.py <path/to/ant/json>...`
 
-for a summary of the options:
+for a summary of the options:  
 `<path/to/anaconda/python> swarmass.py --help`
 
 # Examples:
@@ -15,7 +16,7 @@ assuming you installed anaconda to ~/anaconda3
 
 `~/anaconda3/bin/python3.5 swarmass.py --sequence "hpphpph" --target 2 --generations 5 --population 10 --output ./example`
 
-to view a result
+to view a result  
 `~/anaconda3/bin/python3.5 view_sequence.py ./example/Ant_0_*.json`
 
 
