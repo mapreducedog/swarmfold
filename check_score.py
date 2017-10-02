@@ -15,6 +15,10 @@ import move
 import itertools
 import json
 
+plot_with_legend = True
+
+polarity_colors = { 'h' : 'red', 'p' : 'blue'}
+polarity_full_name = {'h': 'hydrophobic', 'p':'polar'}
 
 
 def get_coords_blocks(move_sequence):
@@ -75,17 +79,27 @@ def save_sequence(move_sequence, polar_sequence, filename):
         json.dump(outdic, outfile)
 
 def make_plot_2d(coord_sequence, polar_sequence, ax):
-    xys = [[int(j[0,0]) for j in i] for i in zip(*coord_sequence)][:-1]
+    xys = [[int(j[0,0]) for j in i] for i in zip(*coord_sequence)][:-1] 
     x, y = xys
     mins = [min(x), min(y)]
     maxs = [max(x), max(y)]
     for pos, axis in enumerate('xy'):
         getattr(ax, "set_{}bound".format(axis))(mins[pos], maxs[pos])
         getattr(ax, "set_{}ticks".format(axis))(list(range(mins[pos], maxs[pos] + 1)))
-    ax.plot(*xys)
-    ax.scatter(*xys, c = [x == 'h' for x in polar_sequence] if polar_sequence else None, vmin = -1, vmax = 2, alpha = 1)
+    
+    coords_by_polarity = itertools.groupby(sorted(zip(x,y,polar_sequence), key = lambda x:x[-1]), key = lambda x:x[-1])
+    
+    
+    for polarity, coords in coords_by_polarity:
+        xs,ys,_ = zip(*coords) #turn the ((x1,y1), (x2,y2), ...) -> ((x1, x2, ...), (y1,y2, ...))
+        ax.scatter(xs, ys, color = polarity_colors[polarity], label = polarity_full_name[polarity])
+        
+    #ax.scatter(*xys, c = [x == 'h' for x in polar_sequence] if polar_sequence else None, vmin = -1, vmax = 2, alpha = 1,label = ['hydrophobic' if x == 'h' else 'polar' for x in polar_sequence])
     for pos, xyz in enumerate(coord_sequence):
         ax.text(xyz[0,0],xyz[1,0], s = str(pos))
+    if plot_with_legend:
+        ax.legend()
+    ax.plot(x,y)
 
 def make_plot_3d(coord_sequence, polar_sequence, ax):
     xyzs = [[int(j[0,0]) for j in i] for i in zip(*coord_sequence)]
@@ -96,7 +110,13 @@ def make_plot_3d(coord_sequence, polar_sequence, ax):
         getattr(ax, "set_{}bound".format(axis))(mins[pos], maxs[pos])
         getattr(ax, "set_{}ticks".format(axis))(list(range(mins[pos], maxs[pos] + 1)))
     ax.plot(*xyzs)
-    ax.scatter(*xyzs, c = [x == 'h' for x in polar_sequence] if polar_sequence else None, vmin = -1, vmax = 2, alpha = 1)
+    coords_by_polarity = itertools.groupby(sorted(zip(x,y,z,polar_sequence), key = lambda x:x[-1]), key = lambda x:x[-1])
+    for polarity, coords in coords_by_polarity:
+        xs,ys,zs, _ = zip(*coords) #turn the ((x1,y1,z1), (x2,y2,z1), ...) -> ((x1, x2, ...), (y1,y2, ...), (z1, z2 ...))
+        ax.scatter(xs, ys,zs, color = polarity_colors[polarity], label = polarity_full_name[polarity])
+    #ax.scatter(*xyzs, c = [x == 'h' for x in polar_sequence] if polar_sequence else None, vmin = -1, vmax = 2, alpha = 1)
+    if plot_with_legend:
+        ax.legend()
     for pos, xyz in enumerate(coord_sequence):
         ax.text(xyz[0,0],xyz[1,0],xyz[2,0], s = str(pos))
 
