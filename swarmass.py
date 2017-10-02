@@ -11,6 +11,7 @@ import random
 import typing
 import sys
 import math
+import os
 
 #non-builtin
 import numpy as np
@@ -19,6 +20,7 @@ import numpy as np
 import check_score
 import move
 import user_interface
+
 
 class World(list):
     pheromone_bias = 1.0 #1 #alpha in paper
@@ -29,6 +31,7 @@ class World(list):
     directions = list(move.vector.keys()) # ['l','r','f']
     dimensionality = 3
     with_votes = True
+    output_directory = ""
     __base_pheromone__ = 1/len(directions)
     
     
@@ -49,6 +52,10 @@ class World(list):
         else :
             raise NotImplementedError("dimensionality should be 2 or 3")
         cls.__base_pheromone__ = 1/ len(cls.directions) 
+        
+    @classmethod
+    def set_output_directory(cls, instr):
+        cls.output_directory = instr
     def get_sequence(self, start, end):
         return self.sequence[start:end]
     
@@ -186,9 +193,9 @@ class World(list):
         #return [select_fwd(select_bck(ant)) for ant in ants]
         
 def plot_ant(ant, gen = 0):
-    name = "Ant Gen {} {}".format(gen, ant.score)
-    ant.save_to_json(name)
-    check_score.make_plot(ant.coord_sequence, ant.world.sequence, name = name, dimensionality=World.dimensionality)
+    ant_name = os.path.join(World.output_directory, "Ant_Gen_{}_{}".format(gen, ant.score))
+    ant.save_to_json(ant_name)
+    check_score.make_plot(ant.coord_sequence, ant.world.sequence, name = ant_name, dimensionality=World.dimensionality)
     
 
 def plot_pher_route(world, gen = 0):
@@ -227,8 +234,9 @@ def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphph
         #check_score.plot_world_phero(world, i + 1)
         new_path = world.get_max_phero_path()
         print("Fraction Changes: {}".format(sum(map(lambda x,y: x != y, new_path, old_path))/ len(new_path)))
+        
     #plot_pher_route(w)
-    check_score.plot_history(mins)
+    check_score.plot_history(mins, os.path.join(World.output_directory, "history"))
     a = best
     print(a.score)
     #[print(coord.T, dire) for coord, dire in zip(a.coord_sequence, a.move_sequence)]
@@ -237,5 +245,8 @@ def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphph
 
 if __name__ == '__main__':
     user_interface.main()
-    World.set_dimensionality(user_interface.current_options[-1])
-    my_world,my_ant = test_single(*user_interface.current_options[:-1])
+    World.set_dimensionality(user_interface.current_options[user_interface.set_dimensionality.pos])
+    World.set_output_directory(user_interface.current_options[user_interface.set_output_directory.pos])
+    if not os.path.exists(World.output_directory):
+        os.makedirs(World.output_directory)
+    my_world,my_ant = test_single(*user_interface.current_options[:user_interface.set_target_score.pos + 1])

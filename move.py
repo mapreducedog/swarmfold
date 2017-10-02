@@ -168,7 +168,7 @@ class Ant(namedtuple('Ant', 'start move_sequence')):
         outdic.update({x : getattr(self.world, x) for x in ["dimensionality", "target_score"]})
         outdic['polar_sequence'] = self.world.sequence
         outdic['coord_sequence'] = [x.tolist() for x in self.coord_sequence]
-        with open(os.path.join("paths", "{}.json".format(filename)).replace(" ", "_"), 'w') as outfile:
+        with open("{}.json".format(filename), 'w') as outfile:
             json.dump(outdic, outfile)
 
 def score_new_node(coord_sequence : typing.List[np.matrix],  polarity_sequence : str, node_index : int) -> int:

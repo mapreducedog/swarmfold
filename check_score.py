@@ -1,4 +1,4 @@
-#objective function as in shmygelska 2005 
+
 
 #external libraries
 import matplotlib
@@ -75,7 +75,7 @@ def is_non_intersecting(coord_sequence):
 
 def save_sequence(move_sequence, polar_sequence, filename):
     outdic = {'move_sequence' : move_sequence, 'polar_sequence': polar_sequence}
-    with open(os.path.join("paths", "{}.json".format(filename)).replace(" ", "_"), 'w') as outfile:
+    with open("{}.json".format(filename)) as outfile:
         json.dump(outdic, outfile)
 
 def add_legend(ax):
@@ -142,7 +142,7 @@ def make_plot(coord_sequence, polar_sequence = None, name = None, show_plot = Fa
         raise NotImplementedError("dimensionality should be 3 or 4, supplied {}".format(dimensionality)) 
     
     if save_plot:
-        plt.savefig(os.path.join("paths", "{}".format(name or int(time.time()))).replace(" ", "_"))
+        plt.savefig(name)
     if show_plot:
         plt.show()
     fig.clf()
@@ -188,7 +188,7 @@ def test_plot(move_sequence, polar_sequence, name = None, autocorrect = False, d
         coords = get_coords(move_sequence)
     make_plot(coords, polar_sequence, name = name, save_plot = False, show_plot = True, dimensionality = dimensionality)
 
-def plot_history(mean_hist):
+def plot_history(mean_hist, name):
     x = list(range(len(mean_hist)))
     plt.plot(x, mean_hist)
-    plt.savefig(os.path.join("paths", "{}".format(int(time.time()))).replace(" ", "_"))
+    plt.savefig(name)

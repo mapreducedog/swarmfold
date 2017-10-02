@@ -6,8 +6,9 @@ python3 swarmass.py [options]
 import sys
 import swarmass
 import itertools
+import os
 
-default_options = [10, 30, 'hhhhhhhhhhhhphphpphhpphhpphpphhpphhpphpphhpphhpphphphhhhhhhhhhhh', 42, 3]
+default_options = [10, 30, 'hhhhhhhhhhhhphphpphhpphhpphpphhpphhpphpphhpphhpphphphhhhhhhhhhhh', 42, 3, os.path.join(".", "paths")]
 current_options = default_options[:]
 
 
@@ -31,8 +32,14 @@ def set_target_score(x):
     '''the target score, default:{}'''
     current_options[set_target_score.pos] = int(x[0])
 def set_dimensionality(x):
-    '''set the dimensionality, choose 2 or 3, default {}'''
-    current_options[-1] = int(x[0])
+    '''set the dimensionality, choose 2 or 3, default is {}'''
+    current_options[set_dimensionality.pos] = int(x[0])
+    
+def set_output_directory(x):
+    '''save the the files to this directory, default "{}"
+        will make the directory if it doesnt exist
+    '''
+    current_options[set_output_directory.pos] = " ".join(x)
 def print_help():
     '''print help'''
     print(__doc__)
@@ -75,7 +82,8 @@ flags = [(print_help, ('h', 'help'), False),
          (set_number_generations, ('g', 'generations'), True),
          (set_polarity_string, ('s', 'sequence'), True),
          (set_target_score, ('t', 'target'), True),
-         (set_dimensionality, ('d', 'dimensionality'), True)
+         (set_dimensionality, ('d', 'dimensionality'), True),
+         (set_output_directory, ('o', 'output'), True),
         ]
 for pos, item in enumerate(flags[1:],0):
     item[0].pos = pos
