@@ -27,6 +27,7 @@ class World(list):
     min_pheromone_level = 0.05 #theta in paper
     pheromone_decay_rate = 0.98    #0.95 #rho in paper
     directions = list(move.vector.keys()) # ['l','r','f']
+    dimensionality = 3
     with_votes = True
     __base_pheromone__ = 1/len(directions)
     
@@ -40,6 +41,7 @@ class World(list):
     
     @classmethod
     def set_dimensionality(cls, dimensionality = 2):
+        cls.dimensionality = dimensionality
         if dimensionality == 2:
             cls.directions = ['l','r','f']
         elif dimensionality == 3:
@@ -184,8 +186,9 @@ class World(list):
         #return [select_fwd(select_bck(ant)) for ant in ants]
         
 def plot_ant(ant, gen = 0):
-    check_score.save_sequence(ant.move_sequence, ant.world.sequence, "Ant Gen {} {}".format(gen, ant.score))
-    check_score.make_plot(ant.coord_sequence, ant.world.sequence, name = "Ant Gen {} {}".format(gen, ant.score))
+    name = "Ant Gen {} {}".format(gen, ant.score)
+    ant.save_to_json(name)
+    check_score.make_plot(ant.coord_sequence, ant.world.sequence, name = name, dimensionality=World.dimensionality)
     
 
 def plot_pher_route(world, gen = 0):
@@ -196,7 +199,7 @@ def plot_pher_route(world, gen = 0):
 def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphphhhphphhpphhppphpppppppphh', 
                 target_score = 32):
     world = World(polarity_string, target_score)
-    check_score.plot_world_phero(world)
+    #check_score.plot_world_phero(world)
     #w = World('hpphpphpphpphpph')
     best = type('Ant', (object, ), {'score': 0})
     means = []
@@ -221,7 +224,7 @@ def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphph
             #b = list(filter(lambda x: x.score < (pop_best.score +  mean)/2, b))
             plot_ant(pop_best, i)
         world.lay_pheromone(laying_ants)
-        check_score.plot_world_phero(world, i + 1)
+        #check_score.plot_world_phero(world, i + 1)
         new_path = world.get_max_phero_path()
         print("Fraction Changes: {}".format(sum(map(lambda x,y: x != y, new_path, old_path))/ len(new_path)))
     #plot_pher_route(w)
