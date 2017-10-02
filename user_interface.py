@@ -10,11 +10,6 @@ import os
 
 default_options = [10, 30, 'hhhhhhhhhhhhphphpphhpphhpphpphhpphhpphpphhpphhpphphphhhhhhhhhhhh', 42, 3, os.path.join(".", "paths")]
 current_options = default_options[:]
-
-
-def twod_path():
-    '''fold in 2-dimensional space, rather than 3-dimensional''' 
-    current_options[-1] = 2
     
 
 def set_pop_size(x):
