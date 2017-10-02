@@ -78,6 +78,16 @@ def save_sequence(move_sequence, polar_sequence, filename):
     with open(os.path.join("paths", "{}.json".format(filename)).replace(" ", "_"), 'w') as outfile:
         json.dump(outdic, outfile)
 
+def add_legend(ax):
+    '''add a legend below the figure, of the desired size'''
+    legend_size = 0.05
+    box = ax.get_position()
+    
+    #shrink axis to componsate legend below
+    ax.set_position([box.x0, 
+        box.y0 + box.height * legend_size,box.width, box.height * ( 1.0 - legend_size)])
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.03))
+
 def make_plot_2d(coord_sequence, polar_sequence, ax):
     xys = [[int(j[0,0]) for j in i] for i in zip(*coord_sequence)][:-1] 
     x, y = xys
@@ -89,7 +99,7 @@ def make_plot_2d(coord_sequence, polar_sequence, ax):
     
     coords_by_polarity = itertools.groupby(sorted(zip(x,y,polar_sequence), key = lambda x:x[-1]), key = lambda x:x[-1])
     
-    
+    ax.plot(x,y)
     for polarity, coords in coords_by_polarity:
         xs,ys,_ = zip(*coords) #turn the ((x1,y1), (x2,y2), ...) -> ((x1, x2, ...), (y1,y2, ...))
         ax.scatter(xs, ys, color = polarity_colors[polarity], label = polarity_full_name[polarity])
@@ -98,8 +108,7 @@ def make_plot_2d(coord_sequence, polar_sequence, ax):
     for pos, xyz in enumerate(coord_sequence):
         ax.text(xyz[0,0],xyz[1,0], s = str(pos))
     if plot_with_legend:
-        ax.legend()
-    ax.plot(x,y)
+        add_legend(ax)
 
 def make_plot_3d(coord_sequence, polar_sequence, ax):
     xyzs = [[int(j[0,0]) for j in i] for i in zip(*coord_sequence)]
@@ -115,11 +124,10 @@ def make_plot_3d(coord_sequence, polar_sequence, ax):
         xs,ys,zs, _ = zip(*coords) #turn the ((x1,y1,z1), (x2,y2,z1), ...) -> ((x1, x2, ...), (y1,y2, ...), (z1, z2 ...))
         ax.scatter(xs, ys,zs, color = polarity_colors[polarity], label = polarity_full_name[polarity])
     #ax.scatter(*xyzs, c = [x == 'h' for x in polar_sequence] if polar_sequence else None, vmin = -1, vmax = 2, alpha = 1)
-    if plot_with_legend:
-        ax.legend()
     for pos, xyz in enumerate(coord_sequence):
         ax.text(xyz[0,0],xyz[1,0],xyz[2,0], s = str(pos))
-
+    if plot_with_legend:
+        add_legend(ax)
 def make_plot(coord_sequence, polar_sequence = None, name = None, show_plot = False, save_plot = True, dimensionality = 3):
     fig = plt.figure()
     plt.hold(True)
