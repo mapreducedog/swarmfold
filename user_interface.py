@@ -25,7 +25,7 @@ def set_number_generations(x):
     current_options[set_number_generations.pos] = int(x[0])
 def set_polarity_string(x):
     '''the sequence to solve, default:{}'''
-    current_options[set_polarity_string.pos] = int(x[0])
+    current_options[set_polarity_string.pos] = "".join(x)
 def set_parameters(x):
     "set pheremone_bias, energy_bias, temp_energy"
 def set_target_score(x):
