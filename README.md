@@ -20,10 +20,11 @@ to view a result
 
 
 # Setup:
-1. install anaconda 4.2.0 (as python 3.5 is required, get it from
+1. install anaconda 4.2.0  
+    (as python 3.5 is required, get it from
    https://repo.continuum.io/archive/index.html)
-2. Install PyQT4 (assuming you installed anaconda to ~/anaconda3):
+2. Install PyQT4 (assuming you installed anaconda to ~/anaconda3):  
    `~/anaconda3/bin/conda install pyqt=4`
-3. Finished, try  it with:
+3. Finished, try  it with:  
    `~/anaconda3/bin/python3.5 swarmass.py `
 
