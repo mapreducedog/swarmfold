@@ -29,3 +29,9 @@ to view a result
 3. Finished, try  it with:  
    `~/anaconda3/bin/python3.5 swarmass.py `
 
+# Tips & Tricks
+assuming you have a gnu/linux distribution (this probably works on macOS and other unix-likes as well)
+if you want to view the ant paths in chronological order you run the following  
+`<path/to/anaconda/python> view_sequence.py $(ls -rt <folder/with/ant/paths>*.json)`  
+for example:  
+`~/anaconda3/bin/python3.5 view_sequence.py $(ls -rt ./example/*.json)`
