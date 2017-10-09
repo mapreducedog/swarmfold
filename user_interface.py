@@ -2,13 +2,17 @@
 invocation
 python3 swarmass.py [options]
 '''
-
+#builtin libraries
 import sys
-import swarmass
 import itertools
 import os
 
-default_options = [10, 30, 'hhhhhhhhhhhhphphpphhpphhpphpphhpphhpphpphhpphhpphphphhhhhhhhhhhh', 42, 3, os.path.join(".", "paths")]
+#own libraries
+import swarmass
+
+default_options = [10, 30, 
+'hhhhhhhhhhhhphphpphhpphhpphpphhpphhpphpphhpphhpphphphhhhhhhhhhhh', 42, 3, 
+os.path.join(".", "paths")]
 current_options = default_options[:]
     
 
@@ -51,7 +55,8 @@ def check_option(short_option, long_option, return_arguments = False):
         if option in sys.argv:
             pos = sys.argv.index(option)
             if return_arguments:
-                return list(itertools.takewhile(lambda x: not x.startswith("-"), sys.argv[pos + 1:]))
+                return list(itertools.takewhile(lambda x: not x.startswith("-"), 
+                                                sys.argv[pos + 1:]))
             else:
                 return True
     for pos, string in enumerate(sys.argv[1:], 1):

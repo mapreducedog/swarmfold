@@ -24,10 +24,10 @@ import user_interface
 
 class World(list):
     pheromone_bias = 1.0 #1 #alpha in paper
-    energy_bias = 2.0 #2#0.2 #beta in paper
-    temp_energy = 1.0 #27     #gamma in paper
+    energy_bias = 2 #2#0.2 #beta in paper
+    temp_energy = 27 #27     #gamma in paper
     min_pheromone_level = 0.05 #theta in paper
-    pheromone_decay_rate = 0.98    #0.95 #rho in paper
+    pheromone_decay_rate = 0.97    #0.95 #rho in paper
     directions = list(move.vector.keys()) # ['l','r','f']
     dimensionality = 3
     with_votes = True

@@ -3,4 +3,4 @@
 #for example, if you have anaconda python at the default ~/anaconda3/bin/python
 #the line below should be : ~/anaconda3/bin/python swarmass.py "$@"
 
-anapy swarmass.py "$@"
+~/anaconda3/bin/python swarmass.py "$@"
