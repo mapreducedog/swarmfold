@@ -101,8 +101,8 @@ class Ant(namedtuple('Ant', 'start move_sequence')):
     def conf_desirability(self) -> float:
         '''in paper: exp(- gamma * new_connections)
         here we exp(-gamma * new_connections * beta) 
-        as this is only used in swarmass.world.move.get_path_prob_{fwd,bck}.get_heur_pher
-        we can rewrite formula (2) in the paper,
+        as this method is only used in swarmass.world.move.get_path_prob_{fwd,bck}.get_heur_pher
+        we can rewrite formula(2) in the paper:
         rewriting the exp(- gamma * new_connections)^beta 
         to exp(- gamma * new_connections * beta)
         '''
@@ -162,7 +162,7 @@ class Ant(namedtuple('Ant', 'start move_sequence')):
         next.score = self.score - next.new_connections
         return next
     
-    def save_to_json(self, filename):
+    def save_to_json(self, filename : str) -> None:
         save_attributes = [ "move_sequence", ]
         outdic = {x : getattr(self, x) for x in save_attributes}
         outdic.update({x : getattr(self.world, x) for x in ["dimensionality", "target_score"]})
