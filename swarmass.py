@@ -35,7 +35,7 @@ class World(list):
     __base_pheromone__ = 1/len(directions)
     
     
-    def __init__(self, sequence, target_score):
+    def __init__(self, sequence : str, target_score : int):
         super().__init__(({direction:self.__base_pheromone__ for direction in self.directions} 
                     for _ in sequence))
         self.votes = [{direction:0 for direction in self.directions} for _ in sequence]
@@ -43,7 +43,15 @@ class World(list):
         self.target_score = -abs(target_score)
     
     @classmethod
-    def set_dimensionality(cls, dimensionality = 2):
+    def set_parameters(cls, parameters : typing.Sequence[float]) -> None:
+        for name, value in zip([\
+            "pheromone_bias", "energy_bias", 
+            "temp_energy", "min_pheromone_level", "pheromone_decay_rate"], parameters):
+            setattr(cls, name, value)
+        
+    
+    @classmethod
+    def set_dimensionality(cls, dimensionality : int = 2 ) -> None:
         cls.dimensionality = dimensionality
         if dimensionality == 2:
             cls.directions = ['l','r','f']
@@ -54,8 +62,8 @@ class World(list):
         cls.__base_pheromone__ = 1/ len(cls.directions) 
         
     @classmethod
-    def set_output_directory(cls, instr):
-        cls.output_directory = instr
+    def set_output_directory(cls, directory : str) -> None:
+        cls.output_directory = directory 
     def get_sequence(self, start, end):
         return self.sequence[start:end]
     
@@ -155,7 +163,7 @@ class World(list):
             self.lay_pheromone_with_votes(ants)
         else:
             self.lay_pheromone_without_votes(ants)
-    def get_max_phero_path(self):
+    def get_max_phero_path(self) -> str:
         return "".join([max(pher, key = pher.get) for pher in self])
     
     
@@ -203,7 +211,7 @@ def plot_pher_route(world, gen = 0):
     score = check_score.score_config(min_route, world.sequence)
     check_score.test_plot(min_route, world.sequence, name = "World Gen {} {} ".format(gen, score))
 
-def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphphhhphphhpphhppphpppppppphh', 
+def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphphhhphphhpphhppphpppppppphh',  
                 target_score = 32):
     world = World(polarity_string, target_score)
     #check_score.plot_world_phero(world)
@@ -243,10 +251,16 @@ def test_single(pop_size, generations,polarity_string = 'hphhpphhhhphhhpphhpphph
     plot_ant(a, "final")
     return world,successful_ants + [a]
 
-if __name__ == '__main__':
-    user_interface.main()
+def apply_options():
     World.set_dimensionality(user_interface.current_options[user_interface.set_dimensionality.pos])
     World.set_output_directory(user_interface.current_options[user_interface.set_output_directory.pos])
+    World.set_parameters(user_interface.current_options[user_interface.set_parameters.pos])
     if not os.path.exists(World.output_directory):
         os.makedirs(World.output_directory)
-    my_world,my_ant = test_single(*user_interface.current_options[:user_interface.set_target_score.pos + 1])
+    user_interface.print_settings()
+    user_interface.save_settings_to_json()
+
+if __name__ == '__main__':
+    user_interface.main()
+    apply_options()
+    my_world,my_ant = test_single(*user_interface.current_options[user_interface.set_pop_size.pos:user_interface.set_target_score.pos + 1])
