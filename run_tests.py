@@ -26,11 +26,21 @@ def test_file(filename, dimensionality = 2):
     cnt = 0;
     for seq,score in seq_score_tups:
         cnt += 1
-        user_interface.current_options[user_interface.set_output_directory.pos] = os.path.join(parent_path, "seq_{}".format(cnt))
+        save_path = os.path.join(parent_path, "seq_{}".format(cnt))
+        user_interface.current_options[user_interface.set_output_directory.pos] = save_path
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+        logfile = open(os.path.join(save_path, "log.txt"), 'w', 1)
+        sys.stdout = logfile
         user_interface.current_options[user_interface.set_polarity_string.pos] = seq
         user_interface.current_options[user_interface.set_target_score.pos] = score
         swarmass.apply_options()
+        
+        #create logfile after applying options, otherwise directory might not exist yet
+        
         swarmass.test_single(*user_interface.current_options[user_interface.set_pop_size.pos:user_interface.set_target_score.pos + 1])
+        logfile.close()
+        
         
 
 
