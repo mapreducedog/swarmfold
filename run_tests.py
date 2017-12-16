@@ -10,6 +10,9 @@ def filename_without_ext(filename):
     return os.path.splitext(os.path.basename(filename))[0]
 
 def test_file(filename, dimensionality = 2):
+    experimental_pop_size = 100
+    experimental_nr_generations = 100
+    
     user_interface = swarmass.user_interface
     with open(filename) as infile:
         seq_score_tups = \
@@ -17,6 +20,8 @@ def test_file(filename, dimensionality = 2):
                 map(lambda line: line.strip().split(","), 
                 infile.readlines()))
     user_interface.current_options[user_interface.set_dimensionality.pos] = dimensionality
+    user_interface.current_options[user_interface.set_pop_size.pos] = experimental_pop_size
+    user_interface.current_options[user_interface.set_number_generations.pos] = experimental_nr_generations
     parent_path = os.path.join(".", "test_{}".format(filename_without_ext(filename)))
     cnt = 0;
     for seq,score in seq_score_tups:
