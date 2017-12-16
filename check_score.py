@@ -192,3 +192,4 @@ def plot_history(mean_hist, name):
     x = list(range(len(mean_hist)))
     plt.plot(x, mean_hist)
     plt.savefig(name)
+    plt.clf()
