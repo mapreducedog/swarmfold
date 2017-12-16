@@ -1,5 +1,9 @@
 import sys
 import os
+
+'''need to import user_interface here,
+so that it can inspect the World properties of swarmass'''
+import user_interface as __user_interface
 import swarmass
 
 def filename_without_ext(filename):
