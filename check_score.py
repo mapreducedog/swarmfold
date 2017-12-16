@@ -1,11 +1,15 @@
-
-
+import os
 #external libraries
 import matplotlib
-matplotlib.use('Qt4Agg') #
+
+
+if "DISPLAY" in os.environ:
+    matplotlib.use('Qt4Agg') 
+else: #we're running on a server, so disable X-backend
+    matplotlib.use('agg')
+
 import matplotlib.pyplot as plt
 import numpy as np
-import os
 
 #builtin libraries
 import time
